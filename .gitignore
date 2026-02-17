@@ -1,0 +1,10 @@
+# R artifacts
+.Rhistory
+.Rdata
+.RData
+.Ruserdata
+*.Rproj.user
+
+# Build artifacts
+*.tar.gz
+*.Rcheck/

@@ -1,0 +1,20 @@
+Package: rjdx13
+Title: X13-ARIMA-SEATS Seasonal Adjustment Wrapper for RJDemetra
+Version: 0.1.0
+Authors@R: person("Tom", "Charter", role = c("aut", "cre"), email = "placeholder@example.com")
+Description: Provides high-level functions for seasonal adjustment, forecasting,
+    backcasting, and moving-average extension (MAVE) using the X13-ARIMA-SEATS
+    method via the RJDemetra package. Includes X13 spec file parsing, batch
+    processing, Denton benchmarking, and diagnostic extraction.
+License: Proprietary
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Depends: R (>= 3.5.0)
+Imports:
+    RJDemetra,
+    tempdisagg,
+    stats
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
