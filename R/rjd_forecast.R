@@ -70,12 +70,13 @@ rjd_forecast_matrix <- function(tsMat, date = NULL, periodicity,
   # --- Extend matrix columns if target date is beyond current range ----------
   if (!is.null(target)) {
     last_col <- parse_target_date(col_dates[length(col_dates)])
+    last_col_period <- align_period(last_col, freq)
     extend_n <- calculate_periods_to_target(
-      last_col$year, last_col$period, target$year, target$period, freq
+      last_col$year, last_col_period, target$year, target$period, freq
     )
     if (extend_n > 0) {
       next_year <- last_col$year
-      next_period <- last_col$period + 1L
+      next_period <- last_col_period + 1L
       if (next_period > freq) { next_period <- 1L; next_year <- next_year + 1L }
       new_labels <- generate_date_labels(next_year, next_period, extend_n, freq)
       extension <- matrix(NA_real_, nrow = nrow(tsMat), ncol = extend_n,

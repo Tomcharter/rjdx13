@@ -70,6 +70,7 @@ rjd_seasadj_matrix <- function(tsMat, periodicity,
 
     if (isTRUE(result$error)) {
       record_ts_error(SEASADJ_RJD_FAIL, sname)
+      tsMat[i, ] <- NA_real_
       next
     }
 
@@ -311,6 +312,16 @@ apply_denton_benchmarking <- function(sa_values, original_ts, config) {
 
   sa_ts <- ts(sa_values, start = start_info, frequency = freq)
   annual_totals <- aggregate(original_ts, nfrequency = 1, FUN = sum)
+
+  # Trim partial years — aggregate() sums all periods in a calendar year,
+  # but partial first/last years produce incorrect totals (e.g. sum of 2
+  # quarters instead of 4) and cause tempdisagg to warn about misaligned spans.
+  first_year <- start_info[1] + (start_info[2] > 1)
+  end_info <- end(original_ts)
+  last_year <- end_info[1] - (end_info[2] < freq)
+  if (first_year <= last_year) {
+    annual_totals <- window(annual_totals, start = first_year, end = last_year)
+  }
 
   if (length(annual_totals) < 1) {
     return(list(values = sa_values, applied = FALSE))

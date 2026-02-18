@@ -72,8 +72,9 @@ rjd_backcast_matrix <- function(tsMat, date = NULL, periodicity,
   # --- Prepend matrix columns if target date is before current range ---------
   if (!is.null(target)) {
     first_col <- parse_target_date(col_dates[1])
+    first_col_period <- align_period(first_col, freq)
     prepend_n <- calculate_periods_to_target(
-      target$year, target$period, first_col$year, first_col$period, freq
+      target$year, target$period, first_col$year, first_col_period, freq
     )
     if (prepend_n > 0) {
       new_labels <- generate_date_labels(target$year, target$period, prepend_n, freq)

@@ -841,6 +841,32 @@ generate_date_labels <- function(start_year, start_period, n_periods, freq) {
 # @return List with: year, period, frequency
 # =============================================================================
 
+# =============================================================================
+# ALIGN PARSED PERIOD TO TARGET FREQUENCY
+# =============================================================================
+#
+# Converts a period from parse_target_date() to the correct sub-period for a
+# given target frequency. Needed because ISO date strings ("2010-04-01") are
+# always parsed as monthly (period = month number), but when the matrix uses
+# quarterly data the period must be a quarter number (1-4).
+#
+# @param parsed List from parse_target_date() with $year, $period, $frequency
+# @param freq   Target frequency (1, 4, or 12)
+# @return Integer period aligned to freq
+# =============================================================================
+
+align_period <- function(parsed, freq) {
+  if (parsed$frequency == freq) return(parsed$period)
+  if (parsed$frequency == 12L && freq == 4L) {
+    return((parsed$period - 1L) %/% 3L + 1L)
+  }
+  if (parsed$frequency == 12L && freq == 1L) {
+    return(1L)
+  }
+  parsed$period
+}
+
+
 parse_target_date <- function(date_string) {
   if (is.null(date_string) || !nzchar(trimws(date_string))) {
     return(NULL)
@@ -906,7 +932,8 @@ matrix_row_to_ts <- function(row_values, col_dates, freq) {
 
   # Parse the start date column to get ts start
   start_parsed <- parse_target_date(col_dates[start_col])
-  ts_obj <- ts(values, start = c(start_parsed$year, start_parsed$period),
+  start_period <- align_period(start_parsed, freq)
+  ts_obj <- ts(values, start = c(start_parsed$year, start_period),
                frequency = freq)
 
   list(ts_obj = ts_obj, start_col = start_col, end_col = end_col)

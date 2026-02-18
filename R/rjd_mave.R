@@ -80,8 +80,9 @@ rjd_mave_matrix <- function(tsMat, start_date = NULL, end_date = NULL,
   # Append columns (forward direction)
   if (!is.null(end_target)) {
     last_col <- parse_target_date(col_dates[length(col_dates)])
+    last_col_period <- align_period(last_col, freq)
     extend_fwd <- calculate_periods_to_target(
-      last_col$year, last_col$period, end_target$year, end_target$period, freq
+      last_col$year, last_col_period, end_target$year, end_target$period, freq
     )
   } else if (!is.null(extend)) {
     extend_fwd <- extend
@@ -91,7 +92,7 @@ rjd_mave_matrix <- function(tsMat, start_date = NULL, end_date = NULL,
   if (extend_fwd > 0) {
     last_col_parsed <- parse_target_date(col_dates[length(col_dates)])
     next_year <- last_col_parsed$year
-    next_period <- last_col_parsed$period + 1L
+    next_period <- align_period(last_col_parsed, freq) + 1L
     if (next_period > freq) { next_period <- 1L; next_year <- next_year + 1L }
     new_labels <- generate_date_labels(next_year, next_period, extend_fwd, freq)
     extension <- matrix(NA_real_, nrow = nrow(tsMat), ncol = extend_fwd,
@@ -103,9 +104,10 @@ rjd_mave_matrix <- function(tsMat, start_date = NULL, end_date = NULL,
   # Prepend columns (backward direction)
   if (!is.null(start_target)) {
     first_col <- parse_target_date(col_dates[1])
+    first_col_period <- align_period(first_col, freq)
     prepend_n <- calculate_periods_to_target(
       start_target$year, start_target$period,
-      first_col$year, first_col$period, freq
+      first_col$year, first_col_period, freq
     )
   } else if (!is.null(extend)) {
     prepend_n <- extend
@@ -116,7 +118,7 @@ rjd_mave_matrix <- function(tsMat, start_date = NULL, end_date = NULL,
     first_col_parsed <- parse_target_date(col_dates[1])
     # Compute the start date for prepended columns
     pre_year <- first_col_parsed$year
-    pre_period <- first_col_parsed$period - prepend_n
+    pre_period <- align_period(first_col_parsed, freq) - prepend_n
     while (pre_period < 1) {
       pre_year <- pre_year - 1L
       pre_period <- pre_period + freq
